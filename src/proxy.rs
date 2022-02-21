@@ -100,7 +100,7 @@ impl Ctx {
         *req.body_mut() = Body::from(req_body_bytes.clone());
 
         match serde_json::from_slice::<RpcRequest>(&req_body_bytes) {
-            Ok(rpc_request) => {
+            Ok(mut rpc_request) => {
                 // Check ACL
                 if let Some(acl) = acl {
                     if !acl.allowed_methods.is_empty() {
@@ -116,7 +116,7 @@ impl Ctx {
                 // TODO: Handle TorrentSetLocation
                 // TODO: Handle TorrentRenamePath
                 // TODO: Check that torrents are authorized based on download_dir
-                match rpc_request.call {
+                match &mut rpc_request.call {
                     RpcMethodCall::TorrentAdd { arguments } => {
                         if let Some(download_dir) = acl.and_then(|acl| acl.download_dir.as_ref()) {
                             if download_dir != &arguments.download_dir {
@@ -124,9 +124,94 @@ impl Ctx {
                                 return Ok(self.rpc_failure("forbidden", 403, rpc_request.tag));
                             }
                         }
+
+                        if let Some(tracker_rules) = acl.and_then(|acl| {
+                            (!acl.tracker_rules.is_empty()).then(|| &acl.tracker_rules)
+                        }) {
+                            // Parse torrent in metainfo
+                            if !arguments.metainfo.is_empty() {
+                                if let Some(mut torrent) = base64::decode(&arguments.metainfo)
+                                    .ok()
+                                    .as_ref()
+                                    .and_then(|bencoded| {
+                                        serde_bencode::de::from_bytes::<crate::torrent::Torrent>(
+                                            bencoded,
+                                        )
+                                        .ok()
+                                    })
+                                {
+                                    // Replace announce list
+                                    if torrent
+                                        .announce_list
+                                        .as_ref()
+                                        .map(|list| !list.is_empty())
+                                        .unwrap_or(false)
+                                    {
+                                        // TODO: Support announce list
+                                        return Ok(self.rpc_failure(
+                                            "not implemented",
+                                            501,
+                                            rpc_request.tag,
+                                        ));
+                                    }
+
+                                    // Replace main announce URL
+                                    if let Some(announce) = &mut torrent.announce {
+                                        for rule in tracker_rules.iter() {
+                                            if !rule.matches(announce.as_str()) {
+                                                continue;
+                                            }
+
+                                            if let Some(result) = rule.apply(announce.as_str()) {
+                                                *announce = result;
+                                            } else {
+                                                // The announce URL was removed
+                                                torrent.announce = None;
+                                                break;
+                                            }
+                                        }
+                                    }
+
+                                    // Replace argument
+                                    if let Some(metainfo) = serde_bencode::ser::to_bytes(&torrent)
+                                        .ok()
+                                        .map(|bencoded| base64::encode(bencoded))
+                                    {
+                                        arguments.metainfo = metainfo;
+                                    } else {
+                                        // TODO: Report error
+                                        warn!("error encoding torrent");
+                                        return Ok(self.rpc_failure(
+                                            "internal server error",
+                                            500,
+                                            rpc_request.tag,
+                                        ));
+                                    }
+                                } else {
+                                    // TODO: Report error
+                                    warn!("error parsing torrent");
+                                    return Ok(self.rpc_failure(
+                                        "bad request",
+                                        400,
+                                        rpc_request.tag,
+                                    ));
+                                }
+                            } else {
+                                // TODO: Support magnet links
+                                return Ok(self.rpc_failure(
+                                    "not implemented",
+                                    501,
+                                    rpc_request.tag,
+                                ));
+                            }
+                        }
                     }
                     _ => {}
                 }
+
+                // Replace body
+                *req.body_mut() = Body::from(serde_json::to_string(&rpc_request).unwrap());
+                req.headers_mut().remove(CONTENT_LENGTH);
             }
 
             Err(err) => {

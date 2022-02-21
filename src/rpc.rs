@@ -56,19 +56,32 @@ pub struct RpcArguments {
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "kebab-case")]
 pub struct RpcTorrentAdd {
-    pub cookies: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub cookies: Option<String>,
     pub download_dir: String,
-    pub filename: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub filename: Option<String>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub labels: Vec<String>,
     pub metainfo: String,
     pub paused: bool,
-    pub peer_limit: i32,
-    #[serde(rename = "bandwidthPriority")]
-    pub bandwidth_priority: i32,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub peer_limit: Option<i32>,
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        rename = "bandwidthPriority"
+    )]
+    pub bandwidth_priority: Option<i32>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub files_wanted: Vec<i32>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub files_unwanted: Vec<i32>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub priority_high: Vec<i32>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub priority_low: Vec<i32>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub priority_normal: Vec<i32>,
 }
 

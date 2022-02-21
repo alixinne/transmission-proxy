@@ -1,6 +1,6 @@
 use std::collections::HashSet;
 
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
 use crate::{
     auth::{AuthUser, Providers},
@@ -77,4 +77,32 @@ pub struct Acl {
     /// Deny all access to matched members
     #[serde(default)]
     pub deny: bool,
+
+    /// Tracker rules
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub tracker_rules: Vec<TrackerRule>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum TrackerRule {
+    Replace {
+        #[serde(with = "serde_regex")]
+        from: regex::Regex,
+        to: String,
+    },
+}
+
+impl TrackerRule {
+    pub fn matches(&self, _announce: &str) -> bool {
+        match self {
+            TrackerRule::Replace { .. } => true,
+        }
+    }
+
+    pub fn apply(&self, announce: &str) -> Option<String> {
+        match self {
+            TrackerRule::Replace { from, to } => Some(from.replace(announce, to).to_string()),
+        }
+    }
 }
