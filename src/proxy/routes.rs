@@ -67,7 +67,7 @@ pub struct Routes {
 
 impl Routes {
     fn route_path(base: &str, path: &str) -> String {
-        if base.ends_with("/") {
+        if base.ends_with('/') {
             base.to_string() + &path[1..]
         } else {
             base.to_string() + path

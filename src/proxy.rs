@@ -175,7 +175,7 @@ impl Ctx {
                                     // Replace argument
                                     if let Some(metainfo) = serde_bencode::ser::to_bytes(&torrent)
                                         .ok()
-                                        .map(|bencoded| base64::encode(bencoded))
+                                        .map(base64::encode)
                                     {
                                         arguments.metainfo = metainfo;
                                     } else {
@@ -248,7 +248,7 @@ impl Ctx {
                                 // Strip trailing /
                                 let torrent_download_dir = torrent
                                     .download_dir
-                                    .strip_suffix("/")
+                                    .strip_suffix('/')
                                     .unwrap_or(torrent.download_dir.as_str());
 
                                 torrent_download_dir.starts_with(download_dir)
