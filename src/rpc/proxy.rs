@@ -180,6 +180,7 @@ impl RpcProxyClient {
         &self,
         torrent_ids: &mut dyn HasTorrentIds,
         current_rpc_request: &hyper::Request<Body>,
+        acl: &Acl,
     ) -> Result<(), FilterErrorKind> {
         if torrent_ids.filters_on_response() {
             // Nothing to do, filter on response
@@ -232,6 +233,7 @@ impl RpcProxyClient {
                 torrents
                     .torrents
                     .into_iter()
+                    .filter(|torrent| self.prefix_ok(&torrent.download_dir, acl))
                     .map(|torrent| torrent.id)
                     .collect(),
             ));
@@ -279,6 +281,12 @@ impl RpcProxyClient {
 
     fn prefix_ok(&self, location: &str, acl: &Acl) -> bool {
         if let Some(download_dir) = &acl.download_dir {
+            // Exact match, we can exit already
+            if location == download_dir {
+                return true;
+            }
+
+            // Else, check that it's a prefix match
             let prefix = if download_dir.ends_with("/") {
                 download_dir.clone()
             } else {
@@ -311,7 +319,7 @@ impl RpcProxyClient {
         // Filter torrent ids
         if acl.download_dir.is_some() {
             if let Some(torrent_ids) = request.call.torrent_ids_mut() {
-                self.filter_torrent_ids(torrent_ids, current_rpc_request)
+                self.filter_torrent_ids(torrent_ids, current_rpc_request, acl)
                     .await
                     .map_err(|err| {
                         error!(?err, "failed filtering torrent ids");
