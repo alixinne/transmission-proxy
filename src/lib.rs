@@ -11,8 +11,8 @@ mod auth;
 mod config;
 mod error;
 mod ext;
-mod proxy;
 mod rpc;
+mod server;
 pub mod torrent;
 
 #[derive(Debug, Parser)]
@@ -81,5 +81,5 @@ pub async fn run(mut args: Args) -> eyre::Result<()> {
         warn!("generated secret key because none was specified");
     }
 
-    proxy::run(args, config).await
+    server::run(args, config).await
 }

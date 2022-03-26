@@ -72,7 +72,7 @@ pub struct Acl {
 
     /// List of allowed RPC methods. Unrestricted if empty (use deny to block access).
     #[serde(default)]
-    pub allowed_methods: Vec<rpc::RpcMethodName>,
+    pub allowed_methods: Vec<rpc::MethodName>,
 
     /// Deny all access to matched members
     #[serde(default)]

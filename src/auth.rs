@@ -6,7 +6,7 @@ use serde::{Deserialize, Serialize};
 use tokio::sync::Mutex;
 use tracing::warn;
 
-use crate::{ext::ParsedRequest, proxy::JwtKey};
+use crate::{ext::ParsedRequest, server::JwtKey};
 
 pub const COOKIE_NAME: &str = "_transmission_proxy";
 
