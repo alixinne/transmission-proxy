@@ -5,15 +5,15 @@ use color_eyre::eyre;
 
 use hmac::Mac;
 use hyper::Server;
+
 use tower_cookies::CookieManagerLayer;
 use tracing::{info, span, Instrument, Level};
 
 use crate::{config::Config, error::Error, rpc::proxy::RpcProxyClient, Args};
 
 mod auth;
-
+mod oauth;
 mod routes;
-
 mod views;
 use views::Views;
 
@@ -72,7 +72,7 @@ pub async fn run(args: Args, config: Config) -> eyre::Result<()> {
     };
 
     // Initialize context
-    let base_path = args.bind.path().to_string();
+    let bind = args.bind.clone();
     let ctx = Arc::new(Ctx::new(args, config));
 
     // Create axum router
@@ -90,14 +90,15 @@ pub async fn run(args: Args, config: Config) -> eyre::Result<()> {
             router
         };
 
-        router
+        // Enable oauth routes
+        oauth::add_provider_routes(ctx.clone(), router)?
     };
 
     // Root routes
     let router = Router::new()
         .route("/", routing::get(routes::default))
         .route("/healthz", routing::get(routes::healthz))
-        .nest(&base_path, sub_router)
+        .nest(bind.path(), sub_router)
         .fallback(routing::get(routes::proxy_request).post(routes::proxy_request))
         .layer(Extension(ctx.clone()))
         .layer(CookieManagerLayer::new());

@@ -5,12 +5,20 @@ use serde::{Deserialize, Serialize};
 use tokio::sync::Mutex;
 use tracing::warn;
 
+fn default_true() -> bool {
+    true
+}
+
 #[derive(Debug, Clone)]
 pub enum AuthUser {
     Anonymous,
     Basic {
         username: String,
         password: Option<SecretString>,
+    },
+    OAuth2 {
+        username: String,
+        provider: String,
     },
 }
 
@@ -31,6 +39,7 @@ pub struct BasicAuthUser {
 #[serde(deny_unknown_fields)]
 pub struct BasicAuthProvider {
     pub enabled: bool,
+    #[serde(default = "default_true")]
     pub visible: bool,
     pub users: Vec<BasicAuthUser>,
 
@@ -71,9 +80,27 @@ impl BasicAuthProvider {
     }
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct OAuth2Provider {
+    pub name: String,
+    #[serde(default = "default_true")]
+    pub enabled: bool,
+    #[serde(default = "default_true")]
+    pub visible: bool,
+
+    pub client_id: oauth2::ClientId,
+    pub client_secret: oauth2::ClientSecret,
+    pub auth_url: oauth2::AuthUrl,
+    pub token_url: oauth2::TokenUrl,
+    pub userinfo_url: url::Url,
+    pub email_path: String,
+}
+
 #[derive(Default, Debug, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct Providers {
     #[serde(default)]
     pub basic: BasicAuthProvider,
+    #[serde(default)]
+    pub oauth2: Vec<OAuth2Provider>,
 }

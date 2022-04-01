@@ -38,8 +38,12 @@ impl UserClaim {
             AuthUser::Basic {
                 username,
                 password: _,
-            } => Some(UserClaim::Basic {
+            } => Some(Self::Basic {
                 username: username.clone(),
+            }),
+            AuthUser::OAuth2 { username, provider } => Some(Self::OAuth2 {
+                username: username.clone(),
+                provider: provider.clone(),
             }),
         }
     }
@@ -61,9 +65,8 @@ impl From<UserClaim> for AuthUser {
                 password: None,
             },
             UserClaim::OAuth2 {
-                username: _,
-                provider: _,
-            } => todo!(),
+                username, provider, ..
+            } => Self::OAuth2 { username, provider },
         }
     }
 }

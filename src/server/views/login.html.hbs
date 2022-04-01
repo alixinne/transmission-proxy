@@ -36,6 +36,13 @@
         <li><a href="auth/basic{{#if redirect_to}}?redirect_to={{urlencode redirect_to}}{{/if}}">Login with username and password</a></li>
           {{/if}}
         {{/if}}
+        {{#each config.providers.oauth2}}
+          {{#if this.enabled}}
+            {{#if this.visible}}
+        <li><a href="auth/{{this.name}}/login">Login with {{this.name}}</a></li>
+            {{/if}}
+          {{/if}}
+        {{/each}}
       </ul>
     </div>
   </body>

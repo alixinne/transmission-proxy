@@ -7,6 +7,7 @@ edition = "2021"
 default-run = "transmission-proxy"
 
 [dependencies]
+async-session = "3.0.0"
 axum = { version = "0.5", features = ["headers"] }
 base64 = "0.13"
 bcrypt = "0.10"
@@ -16,9 +17,12 @@ cookie = { version = "0.16", features = ["percent-encode"] }
 handlebars = "4.2"
 hmac = "0.12"
 hyper = { version = "0.14", features = ["full"] }
+jsonpath = "0.1.1"
 jwt = "0.16"
+oauth2 = "4.1.0"
 rand = "0.8"
 regex = "1.5"
+reqwest = { version = "0.11", features = ["json"] }
 secrecy = "0.8"
 serde = { version = "1", features = ["derive"] }
 serde_bencode = "0.2"
