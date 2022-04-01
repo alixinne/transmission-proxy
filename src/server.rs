@@ -1,29 +1,23 @@
-use std::{convert::Infallible, sync::Arc};
+use std::sync::Arc;
 
+use axum::{routing, Extension, Router};
 use color_eyre::eyre;
 
 use hmac::Mac;
-use hyper::{
-    header::LOCATION,
-    service::{make_service_fn, service_fn},
-    Body, Method, Request, Response, Server,
-};
-use tracing::{debug, info, span, warn, Instrument, Level};
+use hyper::Server;
+use tower_cookies::CookieManagerLayer;
+use tracing::{info, span, Instrument, Level};
 
-use crate::{
-    auth::AuthUser,
-    config::Config,
-    error::Error,
-    ext::{ParsedRequest, RequestExt},
-    rpc::proxy::RpcProxyClient,
-    Args,
-};
+use crate::{config::Config, error::Error, rpc::proxy::RpcProxyClient, Args};
+
+mod auth;
 
 mod routes;
-use routes::Routes;
 
 mod views;
 use views::Views;
+
+use self::routes::Paths;
 
 pub type JwtKey = hmac::Hmac<sha2::Sha256>;
 
@@ -32,15 +26,15 @@ struct Ctx {
     config: Config,
     client: RpcProxyClient,
     jwt_key: JwtKey,
-    routes: Routes,
     views: Views,
+    paths: Paths,
 }
 
 impl Ctx {
     pub fn new(args: Args, config: Config) -> Self {
-        let routes = Routes::new(&args);
         let views = Views::new();
         let jwt_key = JwtKey::new_from_slice(args.secret_key.as_bytes()).unwrap();
+        let paths = Paths::new(&args);
 
         let upstream = args.upstream.clone();
         Self {
@@ -48,97 +42,9 @@ impl Ctx {
             config,
             client: RpcProxyClient::new(upstream),
             jwt_key,
-            routes,
             views,
+            paths,
         }
-    }
-
-    async fn handle_proxy_request(
-        &self,
-        req: Request<Body>,
-        parsed: ParsedRequest,
-    ) -> Result<Response<Body>, hyper::Error> {
-        // Authenticate user
-        let user = AuthUser::auth(&self.jwt_key, &parsed);
-
-        // Check authorization
-        let acl = self.config.acl.get(&user, &self.config.providers).await;
-
-        if let Some(acl) = acl {
-            // One ACL rule matched
-            debug!(?acl, "matched acl");
-
-            // Does this rule deny access?
-            if acl.deny {
-                if user.is_anonymous() {
-                    // This is an unauthenticated user, redirect to the login page
-                    return Ok(Response::builder()
-                        .status(302)
-                        .header(
-                            LOCATION,
-                            self.routes.login.path.clone()
-                                + "?redirect_to="
-                                + urlencoding::encode(&req.uri().to_string()).as_ref(),
-                        )
-                        .body(Body::empty())
-                        .unwrap());
-                } else {
-                    // This is an authenticated, but not allowed user
-                    return Ok(Response::builder()
-                        .status(401)
-                        .body(Body::from("Unauthorized"))
-                        .unwrap());
-                }
-            }
-        } else {
-            // No ACL rules matched, authorize by default
-            warn!(?acl, "no matched acl, running without authentication");
-        }
-
-        // Forward to upstream
-        self.client.handle_request(req, acl).await
-    }
-
-    async fn handle_request(&self, req: Request<Body>) -> Result<Response<Body>, hyper::Error> {
-        let span = span!(
-            Level::INFO,
-            "request",
-            method = ?req.method(),
-            uri = ?req.uri(),
-            headers = ?req.headers()
-        );
-
-        async move {
-            match (req.method(), req.uri().path()) {
-                (&Method::GET, "/healthz") => {
-                    // Health check
-                    Ok(Response::new(Body::empty()))
-                }
-
-                (_method, _path) => {
-                    // Parse request data
-                    let parsed = match req.parse() {
-                        Ok(parsed) => parsed,
-                        Err(err) => {
-                            let response =
-                                Response::builder().status(400).body(Body::empty()).unwrap();
-                            info!(?response, %err);
-                            return Ok(response);
-                        }
-                    };
-
-                    if let Some(handler) = self.routes.handler(self, &req) {
-                        handler.handle(self, req, parsed).await
-                    } else {
-                        let response = self.handle_proxy_request(req, parsed).await;
-                        info!(?response);
-                        response
-                    }
-                }
-            }
-        }
-        .instrument(span)
-        .await
     }
 }
 
@@ -166,22 +72,39 @@ pub async fn run(args: Args, config: Config) -> eyre::Result<()> {
     };
 
     // Initialize context
+    let base_path = args.bind.path().to_string();
     let ctx = Arc::new(Ctx::new(args, config));
 
-    // Create hyper service fn
-    let make_svc = make_service_fn(|_conn| {
-        let ctx = ctx.clone();
-        async move {
-            Ok::<_, Infallible>(service_fn(move |req| {
-                let ctx = ctx.clone();
-                async move { ctx.handle_request(req).await }
-            }))
-        }
-    });
+    // Create axum router
+    // Nested routes
+    let sub_router = {
+        let router = Router::new()
+            .route("/", routing::get(routes::default))
+            .route("/login", routing::get(routes::login))
+            .route("/logout", routing::get(routes::logout));
+
+        // Enable basic auth
+        let router = if ctx.config.providers.basic.enabled {
+            router.route("/auth/basic", routing::get(routes::auth_basic))
+        } else {
+            router
+        };
+
+        router
+    };
+
+    // Root routes
+    let router = Router::new()
+        .route("/", routing::get(routes::default))
+        .route("/healthz", routing::get(routes::healthz))
+        .nest(&base_path, sub_router)
+        .fallback(routing::get(routes::proxy_request).post(routes::proxy_request))
+        .layer(Extension(ctx.clone()))
+        .layer(CookieManagerLayer::new());
 
     // Bind server
     let server = Server::try_bind(&addr)?
-        .serve(make_svc)
+        .serve(router.into_make_service())
         .instrument(server_span.clone());
 
     info!(parent: server_span, "listening");

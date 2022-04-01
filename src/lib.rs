@@ -10,7 +10,6 @@ mod acl;
 mod auth;
 mod config;
 mod error;
-mod ext;
 mod rpc;
 mod server;
 pub mod torrent;
