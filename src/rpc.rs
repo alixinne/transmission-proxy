@@ -4,6 +4,61 @@ use serde::{Deserialize, Serialize};
 
 pub mod proxy;
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum IntBool {
+    Int(i32),
+    Bool(bool),
+}
+
+impl IntBool {
+    pub fn as_bool(&self) -> bool {
+        (*self).into()
+    }
+}
+
+impl Default for IntBool {
+    fn default() -> Self {
+        Self::Bool(false)
+    }
+}
+
+impl From<bool> for IntBool {
+    fn from(value: bool) -> Self {
+        Self::Bool(value)
+    }
+}
+
+impl From<i32> for IntBool {
+    fn from(value: i32) -> Self {
+        Self::Int(value)
+    }
+}
+
+impl From<IntBool> for bool {
+    fn from(value: IntBool) -> Self {
+        match value {
+            IntBool::Int(i) => i != 0,
+            IntBool::Bool(b) => b,
+        }
+    }
+}
+
+impl From<IntBool> for i32 {
+    fn from(value: IntBool) -> Self {
+        match value {
+            IntBool::Int(i) => i,
+            IntBool::Bool(b) => {
+                if b {
+                    1
+                } else {
+                    0
+                }
+            }
+        }
+    }
+}
+
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum TorrentId {
@@ -85,19 +140,19 @@ pub struct SessionArguments {
     /// max global download speed (KBps)
     pub alt_speed_down: i32,
     /// true means use the alt speeds
-    pub alt_speed_enabled: bool,
+    pub alt_speed_enabled: IntBool,
     /// when to turn on alt speeds (units: minutes after midnight)
     pub alt_speed_time_begin: i32,
     /// what day(s) to turn on alt speeds (look at tr_sched_day)
     pub alt_speed_time_day: i32,
     /// true means the scheduled on/off times are used
-    pub alt_speed_time_enabled: bool,
+    pub alt_speed_time_enabled: IntBool,
     /// when to turn off alt speeds (units: same)
     pub alt_speed_time_end: i32,
     /// max global upload speed (KBps)
     pub alt_speed_up: i32,
     /// true means enabled
-    pub blocklist_enabled: bool,
+    pub blocklist_enabled: IntBool,
     /// i32 of rules in the blocklist
     pub blocklist_size: i32,
     /// location of the blocklist to use for blocklist-update
@@ -107,43 +162,43 @@ pub struct SessionArguments {
     /// location of transmission's configuration directory
     pub config_dir: String,
     /// true means allow dht in public torrents
-    pub dht_enabled: bool,
+    pub dht_enabled: IntBool,
     /// default path to download torrents
     pub download_dir: String,
     /// if true, limit how many torrents can be downloaded at once
-    pub download_queue_enabled: bool,
+    pub download_queue_enabled: IntBool,
     /// max i32 of torrents to download at once (see download-queue-enabled)
     pub download_queue_size: i32,
     /// required, preferred, tolerated
     pub encryption: String,
     /// true if the seeding inactivity limit is honored by default
-    pub idle_seeding_limit_enabled: bool,
+    pub idle_seeding_limit_enabled: IntBool,
     /// torrents we're seeding will be stopped if they're idle for this long
     pub idle_seeding_limit: i32,
     /// true means keep torrents in incomplete-dir until done
-    pub incomplete_dir_enabled: bool,
+    pub incomplete_dir_enabled: IntBool,
     /// path for incomplete torrents, when enabled
     pub incomplete_dir: String,
     /// true means allow Local Peer Discovery in public torrents
-    pub lpd_enabled: bool,
+    pub lpd_enabled: IntBool,
     /// maximum global i32 of peers
     pub peer_limit_global: i32,
     /// maximum global i32 of peers
     pub peer_limit_per_torrent: i32,
     /// true means pick a random peer port on launch
-    pub peer_port_random_on_start: bool,
+    pub peer_port_random_on_start: IntBool,
     /// port i32
     pub peer_port: i32,
     /// true means allow pex in public torrents
-    pub pex_enabled: bool,
+    pub pex_enabled: IntBool,
     /// true means ask upstream router to forward the configured peer port to transmission using UPnP or NAT-PMP
-    pub port_forwarding_enabled: bool,
+    pub port_forwarding_enabled: IntBool,
     /// whether or not to consider idle torrents as stalled
-    pub queue_stalled_enabled: bool,
+    pub queue_stalled_enabled: IntBool,
     /// torrents that are idle for N minuets aren't counted toward seed-queue-size or download-queue-size
     pub queue_stalled_minutes: i32,
     /// true means append .part to incomplete files
-    pub rename_partial_files: bool,
+    pub rename_partial_files: IntBool,
     /// the minimum RPC API version supported
     pub rpc_version_minimum: i32,
     /// the current RPC API version in a semver-compatible string
@@ -170,7 +225,7 @@ pub struct SessionArguments {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub script_torrent_done_seeding_filename: Option<String>,
     /// if true, limit how many torrents can be uploaded at once
-    pub seed_queue_enabled: bool,
+    pub seed_queue_enabled: IntBool,
     /// max i32 of torrents to uploaded at once (see seed-queue-enabled)
     pub seed_queue_size: i32,
     /// default seed ratio for torrents to use
@@ -178,23 +233,23 @@ pub struct SessionArguments {
     pub seed_ratio_limit: f32,
     /// true if seedRatioLimit is honored by default
     #[serde(rename = "seedRatioLimited")]
-    pub seed_ratio_limited: bool,
+    pub seed_ratio_limited: IntBool,
     /// true means enabled
-    pub speed_limit_down_enabled: bool,
+    pub speed_limit_down_enabled: IntBool,
     /// max global download speed (KBps)
     pub speed_limit_down: i32,
     /// true means enabled
-    pub speed_limit_up_enabled: bool,
+    pub speed_limit_up_enabled: IntBool,
     /// max global upload speed (KBps)
     pub speed_limit_up: i32,
     /// true means added torrents will be started right away
-    pub start_added_torrents: bool,
+    pub start_added_torrents: IntBool,
     /// true means the .torrent file of added torrents will be deleted
-    pub trash_original_torrent_files: bool,
+    pub trash_original_torrent_files: IntBool,
     /// see below
     pub units: SessionUnits,
     /// true means allow utp
-    pub utp_enabled: bool,
+    pub utp_enabled: IntBool,
     /// long version string $version ($revision)
     pub version: String,
 }
@@ -229,61 +284,61 @@ pub struct SessionSet {
     /// max global download speed (KBps)
     pub alt_speed_down: i32,
     /// true means use the alt speeds
-    pub alt_speed_enabled: bool,
+    pub alt_speed_enabled: IntBool,
     /// when to turn on alt speeds (units: minutes after midnight)
     pub alt_speed_time_begin: i32,
     /// what day(s) to turn on alt speeds (look at tr_sched_day)
     pub alt_speed_time_day: i32,
     /// true means the scheduled on/off times are used
-    pub alt_speed_time_enabled: bool,
+    pub alt_speed_time_enabled: IntBool,
     /// when to turn off alt speeds (units: same)
     pub alt_speed_time_end: i32,
     /// max global upload speed (KBps)
     pub alt_speed_up: i32,
     /// true means enabled
-    pub blocklist_enabled: bool,
+    pub blocklist_enabled: IntBool,
     /// location of the blocklist to use for blocklist-update
     pub blocklist_url: String,
     /// maximum size of the disk cache (MB)
     pub cache_size_mb: i32,
     /// true means allow dht in public torrents
-    pub dht_enabled: bool,
+    pub dht_enabled: IntBool,
     /// default path to download torrents
     pub download_dir: String,
     /// if true, limit how many torrents can be downloaded at once
-    pub download_queue_enabled: bool,
+    pub download_queue_enabled: IntBool,
     /// max i32 of torrents to download at once (see download-queue-enabled)
     pub download_queue_size: i32,
     /// required, preferred, tolerated
     pub encryption: String,
     /// true if the seeding inactivity limit is honored by default
-    pub idle_seeding_limit_enabled: bool,
+    pub idle_seeding_limit_enabled: IntBool,
     /// torrents we're seeding will be stopped if they're idle for this long
     pub idle_seeding_limit: i32,
     /// true means keep torrents in incomplete-dir until done
-    pub incomplete_dir_enabled: bool,
+    pub incomplete_dir_enabled: IntBool,
     /// path for incomplete torrents, when enabled
     pub incomplete_dir: String,
     /// true means allow Local Peer Discovery in public torrents
-    pub lpd_enabled: bool,
+    pub lpd_enabled: IntBool,
     /// maximum global i32 of peers
     pub peer_limit_global: i32,
     /// maximum global i32 of peers
     pub peer_limit_per_torrent: i32,
     /// true means pick a random peer port on launch
-    pub peer_port_random_on_start: bool,
+    pub peer_port_random_on_start: IntBool,
     /// port i32
     pub peer_port: i32,
     /// true means allow pex in public torrents
-    pub pex_enabled: bool,
+    pub pex_enabled: IntBool,
     /// true means ask upstream router to forward the configured peer port to transmission using UPnP or NAT-PMP
-    pub port_forwarding_enabled: bool,
+    pub port_forwarding_enabled: IntBool,
     /// whether or not to consider idle torrents as stalled
-    pub queue_stalled_enabled: bool,
+    pub queue_stalled_enabled: IntBool,
     /// torrents that are idle for N minuets aren't counted toward seed-queue-size or download-queue-size
     pub queue_stalled_minutes: i32,
     /// true means append .part to incomplete files
-    pub rename_partial_files: bool,
+    pub rename_partial_files: IntBool,
     /// whether or not to call the added script
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub script_torrent_added_enabled: Option<bool>,
@@ -303,7 +358,7 @@ pub struct SessionSet {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub script_torrent_done_seeding_filename: Option<String>,
     /// if true, limit how many torrents can be uploaded at once
-    pub seed_queue_enabled: bool,
+    pub seed_queue_enabled: IntBool,
     /// max i32 of torrents to uploaded at once (see seed-queue-enabled)
     pub seed_queue_size: i32,
     /// default seed ratio for torrents to use
@@ -311,23 +366,23 @@ pub struct SessionSet {
     pub seed_ratio_limit: f32,
     /// true if seedRatioLimit is honored by default
     #[serde(rename = "seedRatioLimited")]
-    pub seed_ratio_limited: bool,
+    pub seed_ratio_limited: IntBool,
     /// true means enabled
-    pub speed_limit_down_enabled: bool,
+    pub speed_limit_down_enabled: IntBool,
     /// max global download speed (KBps)
     pub speed_limit_down: i32,
     /// true means enabled
-    pub speed_limit_up_enabled: bool,
+    pub speed_limit_up_enabled: IntBool,
     /// max global upload speed (KBps)
     pub speed_limit_up: i32,
     /// true means added torrents will be started right away
-    pub start_added_torrents: bool,
+    pub start_added_torrents: IntBool,
     /// true means the .torrent file of added torrents will be deleted
-    pub trash_original_torrent_files: bool,
+    pub trash_original_torrent_files: IntBool,
     /// see below
     pub units: SessionUnits,
     /// true means allow utp
-    pub utp_enabled: bool,
+    pub utp_enabled: IntBool,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -359,7 +414,7 @@ pub struct TorrentAdd {
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub labels: Vec<String>,
     pub metainfo: String,
-    pub paused: bool,
+    pub paused: IntBool,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub peer_limit: Option<i32>,
     #[serde(
@@ -535,7 +590,7 @@ pub struct TorrentSetLocation {
     pub ids: Option<TorrentIds>,
     pub location: String,
     #[serde(default, rename = "move")]
-    pub move_data: bool,
+    pub move_data: IntBool,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
