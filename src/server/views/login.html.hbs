@@ -3,15 +3,40 @@
   <head>
     <meta charset="utf-8">
     <title>Transmission Proxy Login</title>
+    <style>
+      body {
+        background: #ccc;
+        font-family: Arial, Helvetica, sans-serif;
+        color: #222;
+      }
+
+      #container {
+        background: #fefefe;
+        margin: 0 auto;
+        margin-top: 50px;
+        padding: 1em 4em;
+        border-radius: 10px;
+        max-width: 600px;
+        box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.2);
+      }
+
+      #container ul {
+        line-height: 30px;
+      }
+    </style>
   </head>
   <body>
-    <h1>Transmission Proxy Login</h1>
-    <ul>
-      {{#if config.providers.basic.enabled}}
-        {{#if config.providers.basic.visible}}
+    <div id="container">
+      <h1>Transmission Proxy Login</h1>
+
+      <p>Choose how to log in:</p>
+      <ul>
+        {{#if config.providers.basic.enabled}}
+          {{#if config.providers.basic.visible}}
         <li><a href="auth/basic{{#if redirect_to}}?redirect_to={{urlencode redirect_to}}{{/if}}">Login with username and password</a></li>
+          {{/if}}
         {{/if}}
-      {{/if}}
-    </ul>
+      </ul>
+    </div>
   </body>
 </html>
