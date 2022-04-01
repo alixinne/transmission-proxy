@@ -115,7 +115,7 @@ pub(super) async fn auth_basic(
             )
             .same_site(cookie::SameSite::Strict)
             .http_only(true)
-            .path(ctx.args.bind.path().to_string())
+            .path(ctx.args.public_url().path().to_string())
             .finish(),
         );
 

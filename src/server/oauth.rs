@@ -21,13 +21,16 @@ use crate::server::auth::{UserClaim, COOKIE_NAME};
 use super::Ctx;
 
 pub(super) fn add_provider_routes(ctx: Arc<Ctx>, mut router: Router) -> eyre::Result<Router> {
-    let bind = ctx.args.bind.clone();
+    let bind = ctx.args.public_url();
 
     for provider in ctx.config.providers.oauth2.clone().into_iter() {
         // Skip disabled providers
         if !provider.enabled {
             continue;
         }
+
+        // Clone
+        let bind = bind.clone();
 
         // Parse json selector
         let selector = Arc::new(
@@ -207,7 +210,7 @@ pub(super) fn add_provider_routes(ctx: Arc<Ctx>, mut router: Router) -> eyre::Re
                                 Cookie::build(COOKIE_NAME, claim.jwt(&ctx.jwt_key))
                                     .same_site(cookie::SameSite::Strict)
                                     .http_only(true)
-                                    .path(ctx.args.bind.path().to_string())
+                                    .path(bind.path().to_string())
                                     .finish(),
                             );
 

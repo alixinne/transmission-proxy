@@ -25,6 +25,13 @@ pub struct Args {
     )]
     pub bind: Uri,
 
+    /// Public url this proxy is accessible at
+    #[clap(
+        long,
+        env = "TRANSMISSION_PROXY_PUBLIC_URL"
+    )]
+    pub public_url: Option<Uri>,
+
     /// Root path for static assets
     #[clap(long, default_value = "public", env = "TRANSMISSION_PROXY_SERVE_ROOT")]
     pub serve_root: PathBuf,
@@ -56,6 +63,12 @@ pub struct Args {
     /// Secret key for signing JWTs
     #[clap(long, default_value = "", env = "TRANSMISSION_PROXY_SECRET_KEY")]
     pub secret_key: String,
+}
+
+impl Args {
+    pub fn public_url(&self) -> Uri {
+        self.public_url.clone().unwrap_or_else(|| self.bind.clone())
+    }
 }
 
 pub async fn run(mut args: Args) -> eyre::Result<()> {
