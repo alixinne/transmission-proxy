@@ -1,3 +1,5 @@
+use std::borrow::Cow;
+
 use hyper::{
     client::HttpConnector,
     header::{ACCEPT_ENCODING, CONTENT_LENGTH, HOST},
@@ -193,7 +195,7 @@ impl RpcProxyClient {
                 call: MethodCall::TorrentGet {
                     arguments: TorrentGet {
                         ids: input.clone(),
-                        fields: vec!["id".to_owned(), "downloadDir".to_owned()],
+                        fields: vec![Cow::Borrowed("id"), Cow::Borrowed("downloadDir")],
                         format: Default::default(),
                     },
                 },
@@ -233,8 +235,8 @@ impl RpcProxyClient {
                 torrents
                     .torrents
                     .into_iter()
-                    .filter(|torrent| self.prefix_ok(&torrent.download_dir, acl))
-                    .map(|torrent| torrent.id)
+                    .filter(|torrent| self.prefix_ok(torrent.download_dir.as_ref().unwrap(), acl))
+                    .map(|torrent| torrent.id.unwrap())
                     .collect(),
             ));
 
@@ -463,8 +465,10 @@ impl RpcProxyClient {
                                 // Strip trailing /
                                 let torrent_download_dir = torrent
                                     .download_dir
+                                    .as_ref()
+                                    .unwrap()
                                     .strip_suffix('/')
-                                    .unwrap_or(torrent.download_dir.as_str());
+                                    .unwrap_or(torrent.download_dir.as_ref().unwrap());
 
                                 torrent_download_dir.starts_with(download_dir)
                             })

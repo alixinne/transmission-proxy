@@ -1,3 +1,3 @@
 pub mod proxy;
 
-pub use transmission_rpc_client::*;
+pub use transmission_rpc_client::types::*;
