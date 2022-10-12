@@ -1,0 +1,10 @@
+[package]
+name = "transmission-rpc-client"
+description = "Client library for the Transmission BitTorrent daemon RPC API"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+strum = { version = "0.24", features = ["derive"] }
