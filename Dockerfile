@@ -2,18 +2,13 @@ FROM docker.io/library/rust:1.63.0 AS build
 
 WORKDIR /src
 
-# Prebuild dependencies
-RUN cargo init \
- && mkdir .cargo
-
-COPY Cargo.lock .
-COPY Cargo.toml .
-RUN cargo vendor > .cargo/config \
- && cargo build --release
-
 # Build full project
-COPY . /src
-RUN cargo build --release
+COPY . .
+RUN \
+    --mount=type=cache,target=/src/target/release/build \
+    --mount=type=cache,target=/src/target/release/deps \
+    --mount=type=cache,target=/usr/local/cargo/registry \
+    cargo build --release
 
 FROM gcr.io/distroless/cc@sha256:101c26286ea36b68200ff94cf95ca9dbde3329c987738cba3ba702efa3465f6f
 COPY --from=build /src/target/release/transmission-proxy /
