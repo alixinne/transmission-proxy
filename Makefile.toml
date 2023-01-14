@@ -1,0 +1,23 @@
+[tasks.ci-bump-version]
+workspace = false
+
+[tasks.ci-bump-version.linux]
+command = "./ci/release.sh"
+args = ["set-version", "${@}"]
+
+[tasks.ci-bump-version.windows]
+command = "C:/Program Files/Git/bin/bash.exe"
+args = ["./ci/release.sh", "set-version", "${@}"]
+
+[tasks.ci-pre-docker]
+workspace = false
+dependencies = []
+
+[tasks.ci-pre-check]
+workspace = false
+dependencies = []
+
+[tasks.ci-test]
+workspace = false
+command = "cargo"
+args = ["test"]
