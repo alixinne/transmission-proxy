@@ -3,3 +3,8 @@ members = ["crates/*"]
 
 [patch.crates-io]
 transmission-rpc-client = { path = "crates/transmission-rpc-client" }
+
+[profile.release]
+strip = "symbols"
+opt-level = "s"
+panic = "abort"
