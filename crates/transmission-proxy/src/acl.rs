@@ -24,13 +24,10 @@ impl Acls {
             AuthUser::Basic { username, password } => {
                 let basic_user = self.rules.iter().find(|acl| {
                     // Find a matching identity
-                    acl.identities
-                        .iter()
-                        .find(|identity| match identity {
-                            AclIdentity::Basic { name } => name == username.as_str(),
-                            _ => false,
-                        })
-                        .is_some()
+                    acl.identities.iter().any(|identity| match identity {
+                        AclIdentity::Basic { name } => name == username.as_str(),
+                        _ => false,
+                    })
                 });
 
                 if let Some(basic_user) = basic_user {
@@ -51,23 +48,15 @@ impl Acls {
             AuthUser::OAuth2 { username, provider } => {
                 let oauth_user = self.rules.iter().find(|acl| {
                     // Find a matching identity
-                    acl.identities
-                        .iter()
-                        .find(|identity| match identity {
-                            AclIdentity::OAuth2 { name, oauth2 } => {
-                                name == username.as_str() && oauth2 == provider
-                            }
-                            _ => false,
-                        })
-                        .is_some()
+                    acl.identities.iter().any(|identity| match identity {
+                        AclIdentity::OAuth2 { name, oauth2 } => {
+                            name == username.as_str() && oauth2 == provider
+                        }
+                        _ => false,
+                    })
                 });
 
-                if let Some(oauth_user) = oauth_user {
-                    // Auth through JWT
-                    Some(oauth_user)
-                } else {
-                    None
-                }
+                oauth_user
             }
         }
         .or_else(|| self.get_anon())

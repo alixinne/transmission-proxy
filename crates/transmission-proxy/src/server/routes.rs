@@ -70,7 +70,7 @@ pub(super) async fn login(
             query
                 .redirect_to
                 .as_deref()
-                .unwrap_or_else(|| ctx.paths.web_path.as_str()),
+                .unwrap_or(ctx.paths.web_path.as_str()),
         )
         .into_response()
     }
@@ -123,7 +123,7 @@ pub(super) async fn auth_basic(
             query
                 .redirect_to
                 .as_deref()
-                .unwrap_or_else(|| ctx.paths.web_path.as_str()),
+                .unwrap_or(ctx.paths.web_path.as_str()),
         )
         .into_response()
     }

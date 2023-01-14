@@ -226,9 +226,7 @@ impl RpcProxyClient {
 
             // Decode the response arguments
             let torrents: Torrents = serde_json::from_value(
-                response
-                    .arguments
-                    .ok_or_else(|| FilterErrorKind::UpstreamUnknown)?,
+                response.arguments.ok_or(FilterErrorKind::UpstreamUnknown)?,
             )?;
 
             *torrent_ids.ids_mut() = Some(TorrentIds::Ids(
@@ -289,7 +287,7 @@ impl RpcProxyClient {
             }
 
             // Else, check that it's a prefix match
-            let prefix = if download_dir.ends_with("/") {
+            let prefix = if download_dir.ends_with('/') {
                 download_dir.clone()
             } else {
                 format!("{}/", download_dir)
@@ -468,7 +466,7 @@ impl RpcProxyClient {
                                     .as_ref()
                                     .unwrap()
                                     .strip_suffix('/')
-                                    .unwrap_or(torrent.download_dir.as_ref().unwrap());
+                                    .unwrap_or_else(|| torrent.download_dir.as_ref().unwrap());
 
                                 torrent_download_dir.starts_with(download_dir)
                             })
@@ -630,6 +628,6 @@ impl RpcProxyClient {
             }
         }
 
-        Ok(self.client.request(req).await?)
+        self.client.request(req).await
     }
 }

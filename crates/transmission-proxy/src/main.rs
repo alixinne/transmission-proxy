@@ -14,7 +14,7 @@ fn main() -> eyre::Result<()> {
     color_eyre::install()?;
 
     // Setup tracing
-    let _subscriber = tracing_subscriber::FmtSubscriber::builder()
+    tracing_subscriber::FmtSubscriber::builder()
         .with_env_filter(EnvFilter::from_str(&args.log)?)
         .finish()
         .with(tracing_error::ErrorLayer::default())

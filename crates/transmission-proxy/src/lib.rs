@@ -26,10 +26,7 @@ pub struct Args {
     pub bind: Uri,
 
     /// Public url this proxy is accessible at
-    #[clap(
-        long,
-        env = "TRANSMISSION_PROXY_PUBLIC_URL"
-    )]
+    #[clap(long, env = "TRANSMISSION_PROXY_PUBLIC_URL")]
     pub public_url: Option<Uri>,
 
     /// Root path for static assets

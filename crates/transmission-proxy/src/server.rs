@@ -50,7 +50,8 @@ impl Ctx {
 
 pub async fn run(args: Args, config: Config) -> eyre::Result<()> {
     // Server status span
-    let server_span = span!(Level::INFO, "server", addr = %args.bind, public_url = ?args.public_url);
+    let server_span =
+        span!(Level::INFO, "server", addr = %args.bind, public_url = ?args.public_url);
 
     // Resolve bind addr
     let addr = {

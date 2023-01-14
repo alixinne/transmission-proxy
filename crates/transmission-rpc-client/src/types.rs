@@ -143,6 +143,7 @@ pub struct TrackerStats {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
+#[allow(clippy::large_enum_variant)]
 pub enum ResponseKind {
     Torrents(Torrents),
     Session(SessionArguments),
@@ -305,7 +306,7 @@ pub struct SessionArguments {
     pub version: String,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct SessionStats {
     pub active_torrent_count: i32,
@@ -319,7 +320,7 @@ pub struct SessionStats {
     pub current_stats: Stats,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Stats {
     pub uploaded_bytes: i32,
@@ -436,7 +437,7 @@ pub struct SessionSet {
     pub utp_enabled: IntBool,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "kebab-case")]
 pub struct SessionUnits {
     pub speed_units: Vec<String>,
@@ -447,7 +448,7 @@ pub struct SessionUnits {
     pub memory_bytes: i32,
 }
 
-#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Default, Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "kebab-case")]
 pub struct SessionGet {
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
@@ -614,7 +615,7 @@ impl Default for TorrentGetFormat {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "kebab-case")]
 pub struct TorrentGet {
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -664,7 +665,7 @@ impl Default for TorrentGet {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "kebab-case")]
 pub struct TorrentRemove {
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -673,7 +674,7 @@ pub struct TorrentRemove {
     pub delete_local_data: Option<bool>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "kebab-case")]
 pub struct TorrentSetLocation {
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -683,7 +684,7 @@ pub struct TorrentSetLocation {
     pub move_data: IntBool,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "kebab-case")]
 pub struct TorrentRenamePath {
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -692,14 +693,14 @@ pub struct TorrentRenamePath {
     pub name: String,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "kebab-case")]
 pub struct QueueMovement {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ids: Option<TorrentIds>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct FreeSpace {
     pub path: String,
 }
