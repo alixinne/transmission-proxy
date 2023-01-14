@@ -1,8 +1,14 @@
 use std::{borrow::Cow, process::exit};
 use transmission_rpc_client::types::TorrentGet;
 
-#[tokio::main(flavor = "current_thread")]
-async fn main() -> anyhow::Result<()> {
+struct Stats {
+    /// Number of torrents with errors
+    tracker_errors: i32,
+    /// Total number of torrents
+    total: i32,
+}
+
+async fn get_torrent_stats() -> anyhow::Result<Stats> {
     let mut client =
         transmission_rpc_client::client::Client::new("http://localhost:9091/transmission/rpc")?;
 
@@ -36,11 +42,25 @@ async fn main() -> anyhow::Result<()> {
         total += 1;
     }
 
-    println!("Torrents with errors: {}", tracker_errors);
-    println!("Total torrents: {}", total);
+    Ok(Stats {
+        tracker_errors,
+        total,
+    })
+}
 
-    if tracker_errors >= total / 2 {
-        exit(1);
+#[tokio::main(flavor = "current_thread")]
+async fn main() -> anyhow::Result<()> {
+    if let Ok(Stats {
+        tracker_errors,
+        total,
+    }) = get_torrent_stats().await
+    {
+        println!("Torrents with errors: {}", tracker_errors);
+        println!("Total torrents: {}", total);
+
+        if tracker_errors >= total / 2 {
+            exit(1);
+        }
     }
 
     Ok(())
