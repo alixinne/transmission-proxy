@@ -15,7 +15,7 @@ RUN cargo vendor > .cargo/config \
 COPY . /src
 RUN cargo build --release
 
-FROM gcr.io/distroless/cc
+FROM gcr.io/distroless/cc@sha256:101c26286ea36b68200ff94cf95ca9dbde3329c987738cba3ba702efa3465f6f
 COPY --from=build /src/target/release/transmission-proxy /
 COPY public /public
 CMD ["/transmission-proxy", "--bind", "http://0.0.0.0:3000/transmission", "--serve-root", "/public"]
