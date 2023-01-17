@@ -100,7 +100,7 @@ pub async fn run(args: Args, config: Config) -> eyre::Result<()> {
         .route("/", routing::get(routes::default))
         .route("/healthz", routing::get(routes::healthz))
         .nest(bind.path(), sub_router)
-        .fallback(routing::get(routes::proxy_request).post(routes::proxy_request))
+        .fallback(routes::proxy_request)
         .layer(Extension(ctx.clone()))
         .layer(CookieManagerLayer::new());
 

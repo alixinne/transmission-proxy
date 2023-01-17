@@ -4,9 +4,10 @@ use axum::{
     async_trait,
     extract::{
         rejection::{TypedHeaderRejection, TypedHeaderRejectionReason},
-        FromRequest, RequestParts, TypedHeader,
+        FromRequestParts, TypedHeader,
     },
     headers::{authorization::Basic, Authorization},
+    http::request::Parts,
     response::{IntoResponse, Response},
     Extension,
 };
@@ -99,19 +100,19 @@ impl IntoResponse for AuthenticationError {
 }
 
 #[async_trait]
-impl<B> FromRequest<B> for AuthUser
+impl<S> FromRequestParts<S> for AuthUser
 where
-    B: Send,
+    S: Send + Sync,
 {
     type Rejection = AuthenticationError;
 
-    async fn from_request(req: &mut RequestParts<B>) -> Result<Self, Self::Rejection> {
-        let Extension(ctx) = Extension::<Arc<Ctx>>::from_request(req)
+    async fn from_request_parts(parts: &mut Parts, state: &S) -> Result<Self, Self::Rejection> {
+        let Extension(ctx) = Extension::<Arc<Ctx>>::from_request_parts(parts, state)
             .await
             .expect("missing ctx");
 
         // Try to check auth cookie
-        let cookies = Cookies::from_request(req)
+        let cookies = Cookies::from_request_parts(parts, state)
             .await
             .map_err(AuthenticationError::Cookies)?;
 
@@ -124,7 +125,7 @@ where
 
         if ctx.config.providers.basic.enabled {
             // Try to get basic auth information
-            match TypedHeader::<Authorization<Basic>>::from_request(req).await {
+            match TypedHeader::<Authorization<Basic>>::from_request_parts(parts, state).await {
                 Ok(TypedHeader(Authorization(basic))) => {
                     let password: SecretString = basic.password().to_owned().into();
 
