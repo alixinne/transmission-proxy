@@ -46,13 +46,7 @@ impl From<IntBool> for i32 {
     fn from(value: IntBool) -> Self {
         match value {
             IntBool::Int(i) => i,
-            IntBool::Bool(b) => {
-                if b {
-                    1
-                } else {
-                    0
-                }
-            }
+            IntBool::Bool(b) => i32::from(b),
         }
     }
 }
