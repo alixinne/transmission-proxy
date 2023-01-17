@@ -1,3 +1,15 @@
+# [1.1.0](https://github.com/vtavernier/transmission-proxy/compare/v1.0.0...v1.1.0) (2023-01-17)
+
+
+### Bug Fixes
+
+* **deps:** update all non-major dependencies ([a97e706](https://github.com/vtavernier/transmission-proxy/commit/a97e70619bcbe96a56e9971526598f64f832e4a6))
+
+
+### Features
+
+* **transmission-proxy:** allow configuring oauth2 scopes ([fdb11c1](https://github.com/vtavernier/transmission-proxy/commit/fdb11c1d29498311b69087be173f59a6bfe68979))
+
 # 1.0.0 (2023-01-14)
 
 

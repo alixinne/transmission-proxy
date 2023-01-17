@@ -2208,7 +2208,7 @@ dependencies = [
 
 [[package]]
 name = "transmission-proxy"
-version = "0.1.0"
+version = "1.1.0"
 dependencies = [
  "async-session",
  "axum",
@@ -2248,7 +2248,7 @@ dependencies = [
 
 [[package]]
 name = "transmission-rpc-client"
-version = "0.1.0"
+version = "1.1.0"
 dependencies = [
  "anyhow",
  "reqwest",
