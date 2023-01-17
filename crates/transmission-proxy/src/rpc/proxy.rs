@@ -355,7 +355,7 @@ impl RpcProxyClient {
                 }
 
                 if let Some(tracker_rules) =
-                    (!acl.tracker_rules.is_empty()).then(|| &acl.tracker_rules)
+                    (!acl.tracker_rules.is_empty()).then_some(&acl.tracker_rules)
                 {
                     self.filter_tracker_list(&mut arguments.tracker_add, tracker_rules);
                     self.filter_tracker_list(&mut arguments.tracker_remove, tracker_rules);
@@ -400,7 +400,7 @@ impl RpcProxyClient {
                 }
 
                 if let Some(tracker_rules) =
-                    (!acl.tracker_rules.is_empty()).then(|| &acl.tracker_rules)
+                    (!acl.tracker_rules.is_empty()).then_some(&acl.tracker_rules)
                 {
                     let b64 = &base64::engine::general_purpose::STANDARD;
 

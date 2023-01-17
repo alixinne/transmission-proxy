@@ -30,19 +30,17 @@ impl Acls {
                     })
                 });
 
-                if let Some(basic_user) = basic_user {
-                    if let Some(password) = password {
-                        if providers.basic.auth(username.as_str(), password).await {
-                            Some(basic_user)
-                        } else {
-                            None
-                        }
-                    } else {
-                        // Auth through JWT
-                        Some(basic_user)
-                    }
+                let basic_user = basic_user?;
+
+                if let Some(password) = password {
+                    providers
+                        .basic
+                        .auth(username, password)
+                        .await
+                        .then_some(basic_user)
                 } else {
-                    None
+                    // Auth through JWT
+                    Some(basic_user)
                 }
             }
             AuthUser::OAuth2 { username, provider } => {
