@@ -94,6 +94,12 @@ pub struct OAuth2Provider {
     pub token_url: oauth2::TokenUrl,
     pub userinfo_url: url::Url,
     pub email_path: String,
+    #[serde(default = "default_scopes")]
+    pub scopes: String,
+}
+
+fn default_scopes() -> String {
+    "email".into()
 }
 
 #[derive(Default, Debug, Serialize, Deserialize)]
