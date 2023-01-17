@@ -1,5 +1,7 @@
 use std::borrow::Cow;
 
+use axum::extract::OriginalUri;
+
 use hyper::{
     client::HttpConnector,
     header::{ACCEPT_ENCODING, CONTENT_LENGTH, HOST},
@@ -616,7 +618,7 @@ impl RpcProxyClient {
         acl: Option<&Acl>,
     ) -> Result<hyper::Response<Body>, hyper::Error> {
         // Update target url
-        *req.uri_mut() = self.get_upstream_url(req.uri());
+        *req.uri_mut() = self.get_upstream_url(&req.extensions().get::<OriginalUri>().unwrap().0);
         req.headers_mut().remove(HOST);
 
         if req.uri().path().ends_with("/rpc") {
