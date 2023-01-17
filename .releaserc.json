@@ -12,7 +12,12 @@
     [
       "@semantic-release/git",
       {
-        "assets": ["CHANGELOG.md", "Cargo.lock", "crates/*/Cargo.toml"],
+        "assets": [
+          "CHANGELOG.md",
+          "Cargo.lock",
+          "crates/transmission-proxy/Cargo.toml",
+          "crates/transmission-rpc-client/Cargo.toml"
+        ],
         "message": "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
       }
     ],
