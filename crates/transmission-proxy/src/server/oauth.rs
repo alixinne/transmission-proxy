@@ -88,11 +88,18 @@ pub(super) fn add_provider_routes(ctx: Arc<Ctx>, mut router: Router) -> eyre::Re
                             let (pkce_challenge, pkce_verifier) =
                                 PkceCodeChallenge::new_random_sha256();
 
-                            let (auth_url, csrf_token) = client
-                                .authorize_url(CsrfToken::new_random)
-                                .add_scope(Scope::new("email".into()))
-                                .set_pkce_challenge(pkce_challenge)
-                                .url();
+                            let (auth_url, csrf_token) = {
+                                let mut client = client.authorize_url(CsrfToken::new_random);
+
+                                // Add scopes from provider config
+                                for scope in
+                                    provider.scopes.split(' ').filter(|scope| !scope.is_empty())
+                                {
+                                    client = client.add_scope(Scope::new(scope.into()));
+                                }
+
+                                client.set_pkce_challenge(pkce_challenge).url()
+                            };
 
                             // Create session
                             let mut session = Session::new();
