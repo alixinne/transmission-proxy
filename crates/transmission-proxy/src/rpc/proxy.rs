@@ -2,6 +2,7 @@ use std::borrow::Cow;
 
 use axum::extract::OriginalUri;
 
+use base64::Engine;
 use hyper::{
     client::HttpConnector,
     header::{ACCEPT_ENCODING, CONTENT_LENGTH, HOST},
@@ -401,10 +402,12 @@ impl RpcProxyClient {
                 if let Some(tracker_rules) =
                     (!acl.tracker_rules.is_empty()).then(|| &acl.tracker_rules)
                 {
+                    let b64 = &base64::engine::general_purpose::STANDARD;
+
                     // Parse torrent in metainfo
                     if !arguments.metainfo.is_empty() {
                         let mut torrent = serde_bencode::de::from_bytes::<crate::torrent::Torrent>(
-                            base64::decode(&arguments.metainfo)?.as_ref(),
+                            b64.decode(&arguments.metainfo)?.as_ref(),
                         )?;
 
                         // Replace announce list
@@ -418,8 +421,7 @@ impl RpcProxyClient {
                         self.filter_tracker(&mut torrent.announce, tracker_rules);
 
                         // Replace argument
-                        arguments.metainfo =
-                            base64::encode(serde_bencode::ser::to_bytes(&torrent)?);
+                        arguments.metainfo = b64.encode(serde_bencode::ser::to_bytes(&torrent)?);
 
                         Ok(request)
                     } else {
