@@ -1,4 +1,4 @@
-FROM docker.io/library/rust:1.66.1 AS build
+FROM docker.io/library/rust:1.67.1 AS build
 
 WORKDIR /src
 

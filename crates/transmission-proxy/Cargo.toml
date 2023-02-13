@@ -12,10 +12,10 @@ transmission-rpc-client = "0.1"
 async-session = "3.0.0"
 axum = { version = "0.6", features = ["headers"] }
 base64 = "0.21"
-bcrypt = "0.13"
-clap = { version = "4.0", features = ["derive", "env"] }
+bcrypt = "0.14"
+clap = { version = "4.1", features = ["derive", "env"] }
 color-eyre = "0.6"
-cookie = { version = "0.16", features = ["percent-encode"] }
+cookie = { version = "0.17", features = ["percent-encode"] }
 handlebars = "4.3"
 hmac = "0.12"
 hyper = { version = "0.14", features = ["full"] }
@@ -35,8 +35,8 @@ serde_yaml = "0.9"
 sha2 = "0.10"
 strum = { version = "0.24", features = ["derive"] }
 thiserror = "1.0"
-tokio = { version = "1.24", features = ["net", "rt-multi-thread"] }
-tower-cookies = "0.8"
+tokio = { version = "1.25", features = ["net", "rt-multi-thread"] }
+tower-cookies = "0.9"
 tracing = "0.1"
 tracing-error = "0.2"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
