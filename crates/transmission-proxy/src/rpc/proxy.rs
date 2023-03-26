@@ -465,14 +465,20 @@ impl RpcProxyClient {
                             .drain(..)
                             .filter(|torrent| {
                                 // Strip trailing /
-                                let torrent_download_dir = torrent
-                                    .download_dir
-                                    .as_ref()
-                                    .unwrap()
-                                    .strip_suffix('/')
-                                    .unwrap_or_else(|| torrent.download_dir.as_ref().unwrap());
+                                if let Some(torrent_download_dir) = torrent.download_dir.as_ref() {
+                                    let torrent_download_dir = torrent_download_dir
+                                        .strip_suffix('/')
+                                        .unwrap_or_else(|| torrent.download_dir.as_ref().unwrap());
 
-                                torrent_download_dir.starts_with(download_dir)
+                                    torrent_download_dir.starts_with(download_dir)
+                                } else {
+                                    error!(
+                                        ?torrent,
+                                        "torrent has empty download dir, this is unexpected"
+                                    );
+
+                                    false
+                                }
                             })
                             .collect();
 
