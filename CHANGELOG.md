@@ -1,3 +1,10 @@
+## [1.1.2](https://github.com/vtavernier/transmission-proxy/compare/v1.1.1...v1.1.2) (2023-03-26)
+
+
+### Bug Fixes
+
+* **transmission-proxy:** do not crash on empty download directories ([9de6377](https://github.com/vtavernier/transmission-proxy/commit/9de6377051ea2b537ffbcc62d38d12d2ec9c9d4a))
+
 ## [1.1.1](https://github.com/vtavernier/transmission-proxy/compare/v1.1.0...v1.1.1) (2023-02-20)
 
 
