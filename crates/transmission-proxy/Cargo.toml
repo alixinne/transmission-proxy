@@ -13,7 +13,7 @@ async-session = "3.0.0"
 axum = { version = "0.6", features = ["headers"] }
 base64 = "0.21"
 bcrypt = "0.14"
-clap = { version = "4.1", features = ["derive", "env"] }
+clap = { version = "4.2", features = ["derive", "env"] }
 color-eyre = "0.6"
 cookie = { version = "0.17", features = ["percent-encode"] }
 handlebars = "4.3"
@@ -35,7 +35,7 @@ serde_yaml = "0.9"
 sha2 = "0.10"
 strum = { version = "0.24", features = ["derive"] }
 thiserror = "1.0"
-tokio = { version = "1.25", features = ["net", "rt-multi-thread"] }
+tokio = { version = "1.27", features = ["net", "rt-multi-thread"] }
 tower-cookies = "0.9"
 tracing = "0.1"
 tracing-error = "0.2"
