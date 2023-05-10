@@ -1,8 +1,8 @@
 [package]
 name = "transmission-rpc-client"
+version = "0.1.0"
 description = "Client library for the Transmission BitTorrent daemon RPC API"
 authors = ["Vincent Tavernier <v.tavernier@pm.me>"]
-version = "0.1.0"
 edition = "2021"
 
 [[example]]

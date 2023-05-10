@@ -1,8 +1,8 @@
 [package]
 name = "transmission-proxy"
+version = "0.1.0"
 description = "An OAuth2 proxy for the Transmission BitTorrent client"
 authors = ["Vincent Tavernier <v.tavernier@pm.me>"]
-version = "0.1.0"
 edition = "2021"
 default-run = "transmission-proxy"
 
