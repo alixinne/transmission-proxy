@@ -16,12 +16,12 @@ required-features = ["client"]
 [dependencies]
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
-strum = { version = "0.24", features = ["derive"] }
+strum = { version = "0.25", features = ["derive"] }
 
 # client features
 reqwest = { version = "0.11", optional = true, features = ["json"] }
 thiserror = { version = "1", optional = true }
-url = { version = "2.3", optional = true }
+url = { version = "2.4", optional = true }
 
 [features]
 default = []
