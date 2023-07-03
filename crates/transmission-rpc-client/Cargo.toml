@@ -29,4 +29,4 @@ client = ["reqwest", "thiserror", "url"]
 
 [dev-dependencies]
 anyhow = "1"
-tokio = { version = "1.28", features = ["macros"] }
+tokio = { version = "1.29", features = ["macros"] }
