@@ -40,11 +40,11 @@ impl Paths {
 }
 
 pub(super) async fn default(Extension(ctx): Extension<Arc<Ctx>>) -> impl IntoResponse {
-    Redirect::to(
-        &(ctx.paths.login_path.clone()
-            + "?redirect_to="
-            + urlencoding::encode(&ctx.paths.web_path).as_ref()),
-    )
+    let url = ctx.paths.login_path.clone()
+        + "?redirect_to="
+        + urlencoding::encode(&ctx.paths.web_path).as_ref();
+    debug!(%url, "Redirecting to login page by default");
+    Redirect::to(&url)
 }
 
 pub(super) async fn healthz() {
@@ -66,13 +66,12 @@ pub(super) async fn login(
             .into_response()
     } else {
         // Authenticated, redirect
-        Redirect::to(
-            query
-                .redirect_to
-                .as_deref()
-                .unwrap_or(ctx.paths.web_path.as_str()),
-        )
-        .into_response()
+        let url = query
+            .redirect_to
+            .as_deref()
+            .unwrap_or(ctx.paths.web_path.as_str());
+        debug!(%url, "Redirecting authenticated user");
+        Redirect::to(url).into_response()
     }
 }
 
@@ -86,7 +85,9 @@ pub(super) async fn logout(
             .finish(),
     );
 
-    Redirect::to(&ctx.paths.login_path)
+    let url = &ctx.paths.login_path;
+    debug!(%url, "Redirecting user after logout");
+    Redirect::to(url)
 }
 
 pub(super) async fn auth_basic(
@@ -119,13 +120,12 @@ pub(super) async fn auth_basic(
             .finish(),
         );
 
-        Redirect::to(
-            query
-                .redirect_to
-                .as_deref()
-                .unwrap_or(ctx.paths.web_path.as_str()),
-        )
-        .into_response()
+        let url = query
+            .redirect_to
+            .as_deref()
+            .unwrap_or(ctx.paths.web_path.as_str());
+        debug!(%url, "Redirecting user after authentication");
+        Redirect::to(url).into_response()
     }
 }
 
@@ -139,18 +139,17 @@ pub(super) async fn proxy_request(
 
     if let Some(acl) = acl {
         // One ACL rule matched
-        debug!(?acl, "matched acl");
+        debug!(?acl, ?user, "matched acl");
 
         // Does this rule deny access?
         if acl.deny {
             if user.is_anonymous() {
                 // This is an unauthenticated user, redirect to the login page
-                return Redirect::to(
-                    &(ctx.paths.login_path.clone()
-                        + "?redirect_to="
-                        + urlencoding::encode(&req.uri().to_string()).as_ref()),
-                )
-                .into_response();
+                let url = ctx.paths.login_path.clone()
+                    + "?redirect_to="
+                    + urlencoding::encode(&req.uri().to_string()).as_ref();
+                debug!(%url, "Redirecting unauthenticated user");
+                return Redirect::to(&url).into_response();
             } else {
                 // This is an authenticated, but not allowed user
                 return Response::builder()
@@ -162,7 +161,11 @@ pub(super) async fn proxy_request(
         }
     } else {
         // No ACL rules matched, authorize by default
-        warn!(?acl, "no matched acl, running without authentication");
+        warn!(
+            ?acl,
+            ?user,
+            "no matched acl, running without authentication"
+        );
     }
 
     // Forward to upstream

@@ -14,7 +14,7 @@ use oauth2::{
 };
 use serde::{Deserialize, Serialize};
 use tower_cookies::Cookies;
-use tracing::error;
+use tracing::{debug, error};
 
 use crate::server::auth::{UserClaim, COOKIE_NAME};
 
@@ -118,6 +118,7 @@ pub(super) fn add_provider_routes(ctx: Arc<Ctx>, mut router: Router) -> eyre::Re
                             cookies.add(Cookie::build(SESSION_COOKIE_NAME, cookie).finish());
 
                             // Redirect to identity provider
+                            debug!(url = %auth_url, "Redirecting to identity provider");
                             Redirect::to(auth_url.as_str())
                         },
                     ),
@@ -222,9 +223,9 @@ pub(super) fn add_provider_routes(ctx: Arc<Ctx>, mut router: Router) -> eyre::Re
                             );
 
                             // Redirect to application
-                            Ok::<_, Response>(
-                                Redirect::to(ctx.paths.web_path.as_str()).into_response(),
-                            )
+                            let url = ctx.paths.web_path.as_str();
+                            debug!(%url, "Redirecting to application");
+                            Ok::<_, Response>(Redirect::to(url).into_response())
                         },
                     ),
                 )
