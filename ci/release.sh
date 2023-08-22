@@ -8,6 +8,7 @@ set_version () {
 
     # Dependency to transmission-rpc-client
     sed -i '/transmission-rpc-client\s*=/{s/version = "[^"]*"/version = "'"$1"'"/}' crates/transmission-proxy/Cargo.toml Cargo.lock
+    sed -i '/transmission-rpc-client\s*=/{s/= "[^"]*"/= "'"$1"'"/}' crates/transmission-proxy/Cargo.toml
 }
 
 action="$1"
