@@ -90,7 +90,7 @@ pub struct Torrent {
     #[serde(default)]
     pub id: Option<TorrentId>,
 
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "String::is_empty")]
     pub name: String,
     #[serde(default)]
     pub download_dir: Option<String>,

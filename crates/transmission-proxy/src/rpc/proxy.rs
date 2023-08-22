@@ -474,7 +474,8 @@ impl RpcProxyClient {
                                 } else {
                                     error!(
                                         ?torrent,
-                                        "torrent has empty download dir, this is unexpected"
+                                        "torrent {} has empty download dir, this is unexpected",
+                                        torrent.name
                                     );
 
                                     false
