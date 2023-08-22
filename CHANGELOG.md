@@ -1,3 +1,14 @@
+## [1.1.4](https://github.com/vtavernier/transmission-proxy/compare/v1.1.3...v1.1.4) (2023-08-22)
+
+
+### Bug Fixes
+
+* **deps:** update all non-major dependencies ([86d81b5](https://github.com/vtavernier/transmission-proxy/commit/86d81b5edefea23e8a0d57521b09fef04e0ddfe8))
+* **deps:** update all non-major dependencies ([f5e2eef](https://github.com/vtavernier/transmission-proxy/commit/f5e2eef58ceb39a3a88efaebabdb0bba5b654461))
+* **deps:** update all non-major dependencies ([5fa6159](https://github.com/vtavernier/transmission-proxy/commit/5fa615974a856db1efdab47233a30c2064630cbd))
+* fix crate versioning ([a8a2319](https://github.com/vtavernier/transmission-proxy/commit/a8a2319c55315c0324920ac2e35f8957125e390c))
+* **proxy:** fix unknown name appearing on refresh ([ab4526c](https://github.com/vtavernier/transmission-proxy/commit/ab4526cb41e8501b0e799a79b2dc95718630fa44))
+
 ## [1.1.3](https://github.com/vtavernier/transmission-proxy/compare/v1.1.2...v1.1.3) (2023-04-10)
 
 
