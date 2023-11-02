@@ -1,3 +1,10 @@
+## [1.1.5](https://github.com/vtavernier/transmission-proxy/compare/v1.1.4...v1.1.5) (2023-11-02)
+
+
+### Bug Fixes
+
+* **deps:** update all non-major dependencies ([2208e2a](https://github.com/vtavernier/transmission-proxy/commit/2208e2a331365665b2aff742af5f49573d55f216))
+
 ## [1.1.4](https://github.com/vtavernier/transmission-proxy/compare/v1.1.3...v1.1.4) (2023-08-22)
 
 
