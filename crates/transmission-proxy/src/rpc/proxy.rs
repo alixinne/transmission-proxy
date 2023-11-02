@@ -592,12 +592,9 @@ impl RpcProxyClient {
         // HTTP 409 is used by transmission to exchange session keys
         if response.status() != 409 {
             // Perform replacements in RPC response
-            if let Some::<RawResponse>(rpc_response) = serde_json::from_slice(&bytes)
-                .map_err(|err| {
-                    error!(?err);
-                })
-                .ok()
-            {
+            if let Ok(rpc_response) = serde_json::from_slice(&bytes).map_err(|err| {
+                error!(?err);
+            }) {
                 let response;
                 bytes = serde_json::to_string(
                     match self.filter_response(&request, rpc_response, acl) {
