@@ -15,7 +15,7 @@ base64 = "0.21"
 bcrypt = "0.15"
 clap = { version = "4.4", features = ["derive", "env"] }
 color-eyre = "0.6"
-cookie = { version = "0.18", features = ["percent-encode"] }
+cookie = { version = "0.17", features = ["percent-encode"] }
 handlebars = "4.4"
 hmac = "0.12"
 hyper = { version = "0.14", features = ["full"] }
