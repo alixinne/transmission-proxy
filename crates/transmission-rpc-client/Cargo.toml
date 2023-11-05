@@ -1,6 +1,6 @@
 [package]
 name = "transmission-rpc-client"
-version = "1.1.5"
+version = "1.1.6"
 description = "Client library for the Transmission BitTorrent daemon RPC API"
 authors = ["Vincent Tavernier <v.tavernier@pm.me>"]
 edition = "2021"
