@@ -16,7 +16,7 @@ bcrypt = "0.15"
 clap = { version = "4.4", features = ["derive", "env"] }
 color-eyre = "0.6"
 cookie = { version = "0.17", features = ["percent-encode"] }
-handlebars = "4.4"
+handlebars = "5.0"
 hmac = "0.12"
 hyper = { version = "0.14", features = ["full"] }
 jsonpath = "0.1.1"
