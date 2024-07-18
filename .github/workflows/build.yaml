@@ -11,7 +11,7 @@ on:
 
 jobs:
   build:
-    uses: vtavernier/github-workflows/.github/workflows/build-rust-docker.yml@v1
+    uses: alixinne/github-workflows/.github/workflows/build-rust-docker.yml@v1
     with:
       docker_test_image_command: /transmission-proxy --help
     secrets:

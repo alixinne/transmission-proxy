@@ -1,6 +1,6 @@
-# [transmission-proxy](https://github.com/vtavernier/transmission-proxy)
+# [transmission-proxy](https://github.com/alixinne/transmission-proxy)
 
-[![Build Status](https://github.com/vtavernier/efiboot-rs/actions/workflows/build.yml/badge.svg)](https://github.com/vtavernier/efiboot-rs/actions/workflows/build.yml)
+[![Build Status](https://github.com/alixinne/efiboot-rs/actions/workflows/build.yml/badge.svg)](https://github.com/alixinne/efiboot-rs/actions/workflows/build.yml)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Built with cargo-make](https://sagiegurari.github.io/cargo-make/assets/badges/cargo-make.svg)](https://sagiegurari.github.io/cargo-make)
 
@@ -85,7 +85,7 @@ providers:
 You can run the proxy from its Docker image:
 
 ```
-docker run -v transmission-proxy.yaml:/transmission-proxy.yaml:ro ghcr.io/vtavernier/transmission-proxy
+docker run -v transmission-proxy.yaml:/transmission-proxy.yaml:ro ghcr.io/alixinne/transmission-proxy
 ```
 
 Check the available options with `--help` to configure integration with your
@@ -93,4 +93,4 @@ existing transmission daemon.
 
 ## Author
 
-Vincent Tavernier <v.tavernier@pm.me>
+Alixinne <alixinne@pm.me>
