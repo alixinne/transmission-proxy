@@ -10,12 +10,12 @@ default-run = "transmission-proxy"
 transmission-rpc-client = "1.1.6"
 
 async-session = "3.0.0"
-axum = { version = "0.6", features = ["headers"] }
-base64 = "0.21"
+axum = { version = "0.7", features = ["headers"] }
+base64 = "0.22"
 bcrypt = "0.15"
 clap = { version = "4.4", features = ["derive", "env"] }
 color-eyre = "0.6"
-cookie = { version = "0.17", features = ["percent-encode"] }
+cookie = { version = "0.18", features = ["percent-encode"] }
 handlebars = "4.4"
 hmac = "0.12"
 hyper = { version = "0.14", features = ["full"] }
@@ -24,8 +24,8 @@ jwt = "0.16"
 oauth2 = "4.4.2"
 rand = "0.8"
 regex = "1.10"
-reqwest = { version = "0.11", features = ["json"] }
-secrecy = "0.8"
+reqwest = { version = "0.12", features = ["json"] }
+secrecy = "0.10"
 serde = { version = "1", features = ["derive"] }
 serde_bencode = "0.2"
 serde_bytes = "0.11"
@@ -33,10 +33,10 @@ serde_json = "1"
 serde_regex = "1.1"
 serde_yaml = "0.9"
 sha2 = "0.10"
-strum = { version = "0.25", features = ["derive"] }
+strum = { version = "0.26", features = ["derive"] }
 thiserror = "1.0"
 tokio = { version = "1.33", features = ["net", "rt-multi-thread"] }
-tower-cookies = "0.9"
+tower-cookies = "0.10"
 tracing = "0.1"
 tracing-error = "0.2"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
