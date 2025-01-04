@@ -6,7 +6,10 @@ use axum::{
     Extension,
 };
 use cookie::{time::OffsetDateTime, Cookie};
-use hyper::{header::WWW_AUTHENTICATE, Body, Request, Response};
+use hyper::{
+    header::{USER_AGENT, WWW_AUTHENTICATE},
+    Body, Request, Response,
+};
 use serde::{Deserialize, Serialize};
 use tower_cookies::Cookies;
 use tracing::{debug, warn};
@@ -144,6 +147,18 @@ pub(super) async fn proxy_request(
         // Does this rule deny access?
         if acl.deny {
             if user.is_anonymous() {
+                if req.headers().get(USER_AGENT).map(|hdr| hdr.as_ref())
+                    == Some(b"transmission-remote-gtk")
+                {
+                    // Unauthenticated client app, this will always use basic auth
+                    return Response::builder()
+                        .status(401)
+                        .header(WWW_AUTHENTICATE, "Basic realm=\"Transmission\"")
+                        .body(Body::empty())
+                        .unwrap()
+                        .into_response();
+                }
+
                 // This is an unauthenticated user, redirect to the login page
                 let url = ctx.paths.login_path.clone()
                     + "?redirect_to="
