@@ -1,3 +1,10 @@
+## [1.2.1](https://github.com/alixinne/transmission-proxy/compare/v1.2.0...v1.2.1) (2025-01-04)
+
+
+### Bug Fixes
+
+* **deps:** update rust crate thiserror to v2 ([#24](https://github.com/alixinne/transmission-proxy/issues/24)) ([099291f](https://github.com/alixinne/transmission-proxy/commit/099291f52780abc70bcfcc985a4984a9083e584c))
+
 # [1.2.0](https://github.com/alixinne/transmission-proxy/compare/v1.1.6...v1.2.0) (2025-01-04)
 
 
