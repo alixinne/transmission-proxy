@@ -554,32 +554,37 @@ impl RpcProxyClient {
         let req_body_bytes = hyper::body::to_bytes(req.body_mut()).await?;
         *req.body_mut() = Body::from(req_body_bytes.clone());
 
-        let request = match serde_json::from_slice::<Request>(&req_body_bytes) {
-            Ok(rpc_request) => {
-                // Check that torrent add respects the download dir
-                match self.filter_request(rpc_request, acl, &req).await {
-                    Ok(request) => {
-                        // Replace body
-                        *req.body_mut() = Body::from(serde_json::to_string(&request).unwrap());
-                        req.headers_mut().remove(CONTENT_LENGTH);
+        let request = if acl.is_nop() {
+            // Nothing to filter here
+            None
+        } else {
+            Some(match serde_json::from_slice::<Request>(&req_body_bytes) {
+                Ok(rpc_request) => {
+                    // Check that torrent add respects the download dir
+                    match self.filter_request(rpc_request, acl, &req).await {
+                        Ok(request) => {
+                            // Replace body
+                            *req.body_mut() = Body::from(serde_json::to_string(&request).unwrap());
+                            req.headers_mut().remove(CONTENT_LENGTH);
 
-                        // Return the request object
-                        request
-                    }
-                    Err(err) => {
-                        return Ok(err.into());
+                            // Return the request object
+                            request
+                        }
+                        Err(err) => {
+                            return Ok(err.into());
+                        }
                     }
                 }
-            }
 
-            Err(err) => {
-                warn!(%err, body = %String::from_utf8_lossy(&req_body_bytes), "could not parse request body");
-                return Ok(FilterError {
-                    tag: None,
-                    kind: FilterErrorKind::ParseBody,
+                Err(err) => {
+                    warn!(%err, body = %String::from_utf8_lossy(&req_body_bytes), "could not parse request body");
+                    return Ok(FilterError {
+                        tag: None,
+                        kind: FilterErrorKind::ParseBody,
+                    }
+                    .into());
                 }
-                .into());
-            }
+            })
         };
 
         // Fetch response
@@ -595,20 +600,23 @@ impl RpcProxyClient {
             if let Ok(rpc_response) = serde_json::from_slice(&bytes).map_err(|err| {
                 error!(?err);
             }) {
-                let response;
-                bytes = serde_json::to_string(
-                    match self.filter_response(&request, rpc_response, acl) {
-                        Ok(resp) => {
-                            response = resp;
-                            &response
-                        }
-                        Err(err) => {
-                            return Ok(err.into());
-                        }
-                    },
-                )
-                .expect("failed to serialize response")
-                .into();
+                // Only filter response if we had to filter the request as well
+                if let Some(request) = request {
+                    let response;
+                    bytes = serde_json::to_string(
+                        match self.filter_response(&request, rpc_response, acl) {
+                            Ok(resp) => {
+                                response = resp;
+                                &response
+                            }
+                            Err(err) => {
+                                return Ok(err.into());
+                            }
+                        },
+                    )
+                    .expect("failed to serialize response")
+                    .into();
+                }
             }
         }
 

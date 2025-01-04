@@ -91,6 +91,17 @@ pub struct Acl {
     pub tracker_rules: Vec<TrackerRule>,
 }
 
+impl Acl {
+    /// Returns true if this ACL does not filter anything (all requests, download dirs and methods
+    /// are allowed). This is used to skip request deserialization if needed.
+    pub fn is_nop(&self) -> bool {
+        self.download_dir.is_none()
+            && self.allowed_methods.is_empty()
+            && !self.deny
+            && self.tracker_rules.is_empty()
+    }
+}
+
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum TrackerRule {
