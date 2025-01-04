@@ -24,7 +24,7 @@ jwt = "0.16"
 oauth2 = "4.4.2"
 rand = "0.8"
 regex = "1.10"
-reqwest = { version = "0.11", features = ["json"] }
+reqwest = { version = "0.11", default-features = false, features = ["rustls-tls", "json"] }
 secrecy = "0.8"
 serde = { version = "1", features = ["derive"] }
 serde_bencode = "0.2"
