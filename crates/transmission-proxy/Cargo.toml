@@ -1,13 +1,13 @@
 [package]
 name = "transmission-proxy"
-version = "1.1.6"
+version = "1.2.0"
 description = "An OAuth2 proxy for the Transmission BitTorrent client"
 authors = ["Alixinne <alixinne@pm.me>"]
 edition = "2021"
 default-run = "transmission-proxy"
 
 [dependencies]
-transmission-rpc-client = "1.1.6"
+transmission-rpc-client = "1.2.0"
 
 async-session = "3.0.0"
 axum = { version = "0.6", features = ["headers"] }

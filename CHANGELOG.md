@@ -1,3 +1,17 @@
+# [1.2.0](https://github.com/alixinne/transmission-proxy/compare/v1.1.6...v1.2.0) (2025-01-04)
+
+
+### Bug Fixes
+
+* **deps:** remove openssl dependency, use rustls instead ([808849d](https://github.com/alixinne/transmission-proxy/commit/808849d72b0ab6e1e83ec3ff2f6ddd285b0ac7c1))
+* return proper 401 response for transmission-remote-gtk ([d7a3d0e](https://github.com/alixinne/transmission-proxy/commit/d7a3d0e1ec107acad828d6a9990320fb0b56cac9))
+* update github profile information ([1ce4d03](https://github.com/alixinne/transmission-proxy/commit/1ce4d03031e3d8c0145aeb20e9f03c96167e8ccd))
+
+
+### Features
+
+* skip request filtering for super users ([14c5a83](https://github.com/alixinne/transmission-proxy/commit/14c5a830ae5f74f03f1b013a523d2455b4075a2d))
+
 ## [1.1.6](https://github.com/alixinne/transmission-proxy/compare/v1.1.5...v1.1.6) (2023-11-05)
 
 
