@@ -20,7 +20,7 @@ strum = { version = "0.25", features = ["derive"] }
 
 # client features
 reqwest = { version = "0.11", optional = true, features = ["json"] }
-thiserror = { version = "1", optional = true }
+thiserror = { version = "2", optional = true }
 url = { version = "2.4", optional = true }
 
 [features]
