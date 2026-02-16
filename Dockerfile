@@ -10,7 +10,7 @@ RUN \
     --mount=type=cache,target=/usr/local/cargo/registry \
     cargo build --release
 
-FROM gcr.io/distroless/cc-debian12@sha256:72344f7f909a8bf003c67f55687e6d51a441b49661af8f660aa7b285f00e57df
+FROM gcr.io/distroless/cc-debian12@sha256:329e54034ce498f9c6b345044e8f530c6691f99e94a92446f68c0adf9baa8464
 COPY --from=build /src/target/release/transmission-proxy /
 COPY public /public
 CMD ["/transmission-proxy", "--bind", "http://0.0.0.0:3000/transmission", "--serve-root", "/public"]
